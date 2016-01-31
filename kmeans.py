@@ -107,7 +107,7 @@ def main(argv):
                             i2 += 1
 
                 index += 1
-            v1 = [(item[0], item[1]/(len(cluster))) for item in v1]  # new centroid
+            v1 = [(item[0], float(item[1])/float((len(cluster)))) for item in v1]  # new centroid - use float
             # print "NEW CENTROID FOR CLUSTER " + str(key)
             # print v1
             centroid_list[key] = v1
