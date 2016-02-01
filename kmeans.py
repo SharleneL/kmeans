@@ -4,17 +4,16 @@ import math
 
 # input format: python kmeans.py [cluster_num]
 
-file_name = "../HW2_data/HW2_dev.docVectors"
-# file_name = "../HW2_data/fake.docVectors"
+file_name = "../../HW2_data/HW2_dev.docVectors"
+# file_name = "../../HW2_data/fake.docVectors"
 
 
 def main(argv):
-    # save the file into a normalized vector list
+    # save the file into a vector list
     vector_list = list()
     f = open(file_name)
     f_line = f.readline()
     while '' != f_line:
-        # vector_list.append(normalize(get_list(f_line)))
         vector_list.append(get_list(f_line))
         f_line = f.readline()
     f.close()
@@ -22,38 +21,13 @@ def main(argv):
     # get total cluster number from input
     cluster_num = int(sys.argv[1])
     # generate centroid indexes randomly
-    # JI DE GAI HUI LAI!!!!
     centroid_index_list = random.sample(list(range(0, len(vector_list)-1)), cluster_num)    # a list of centroids' indexes
-    # centroid_index_list = [0, 3]    # a list of centroids' indexes
     # generate the centroid list
     centroid_list = list()
     for centroid_index in centroid_index_list:
         centroid_list.append(vector_list[centroid_index])
-    # print "CENTROID LIST:"
-    # print centroid_index_list
 
-    # TEST: get_list func
-    # print "================V1==================="
-    # test1 = "2:1 4:1 3:1 1:1 5:0"
-    # print normalize(get_list(test1))
-    # test2 = "4:8 3:6"
-    # print normalize(get_list(test2))
-    # print get_dis(normalize(get_list(test1)), normalize(get_list(test2)))
-    # v1 = vector_list[0]
-    # print v1
-    # vn1 = normalize(v1)
-    # print vn1
-    # print "================V2==================="
-    # print linecache.getline(file_name, 0)
-    # v2 = vector_list[1]
-    # print v2
-    # vn2 = normalize(v2)
-    # print vn2
-    # print "================DIS==================="
-    # print get_dis(v1, v2)
-    # TEST END
-
-    iter_time = 20
+    iter_time = 10
     clusters = dict()  # save {class1: vectorList1; class2: vectorList2; ...}
     for iter_i in range(0, iter_time):  # [0, iter_time-1]
         # cluster each vector
@@ -67,7 +41,7 @@ def main(argv):
                     max_sim = cur_dis
                     classification_res = c_index
             # NOW: vector is classified to the "classification_res"-th cluster
-            # print str(v_index) + " " + str(classification_res)
+            # print "VECTOR INDEX -> CLASSIFICATION RES" + str(v_index) + " " + str(classification_res)
 
             if classification_res in clusters:
                 # update
@@ -108,11 +82,7 @@ def main(argv):
 
                 index += 1
             v1 = [(item[0], float(item[1])/float((len(cluster)))) for item in v1]  # new centroid - use float
-            # print "NEW CENTROID FOR CLUSTER " + str(key)
-            # print v1
             centroid_list[key] = v1
-        # print "====================/ ITERATE TIME #" + str(iter_i) + " /===================="
-        # print centroid_list[0]
 
     # output the res
     for key, cluster in clusters.iteritems():   # key is the cluster index, cluster is a list of vector_index
@@ -127,7 +97,7 @@ def get_list(v_str):
     for item in v_arr:
         item_arr = item.split(":")
         v_list.append((int(item_arr[0]), int(item_arr[1])))
-    v_list.sort(key=lambda tup: tup[0])     # sort by word index, incrreasing
+    v_list.sort(key=lambda tup: tup[0])     # sort by word index, increasing
     return v_list
 
 
