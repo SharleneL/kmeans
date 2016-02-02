@@ -3,42 +3,55 @@ import random
 import math
 import numpy as np
 
-# input format: python kmeans.py [cluster_num]
+# input format: python kmeans.py [cluster_num] [-general/-customize] [-random/-kpp]
 
 file_name = "../../HW2_data/HW2_dev.docVectors"
 # file_name = "../../HW2_data/fake.docVectors"
 
 
 def main(argv):
+    # get terminal input
+    cluster_num = int(sys.argv[1])
+    get_list_method = sys.argv[2]
+    seed_method = sys.argv[3]
+
     # save the file into a vector list
     vector_list = list()
-    f = open(file_name)
-    f_line = f.readline()
-    while '' != f_line:
-        vector_list.append(get_list(f_line))
+    # METHOD#1: get vector by tf
+    if get_list_method == "-general":
+        print "GENERAL!!!!!"
+        f = open(file_name)
         f_line = f.readline()
-    f.close()
+        while '' != f_line:
+            vector_list.append(get_list_tf(f_line))
+            f_line = f.readline()
+        f.close()
+    # METHOD#1: get vector by tfidf
+    elif get_list_method == "-customize":
+        print "CUSTOMIZE!!!!!"
+    # Wrong Method
+    else:
+        print "Wrong Running Method Input! Please input -general or -customize"
 
-    # get total cluster number from input
-    cluster_num = int(sys.argv[1])
-
-    # # ============================================ #
-    # # METHOD#1: generate centroid indexes randomly
-    # centroid_index_list = random.sample(list(range(0, len(vector_list)-1)), cluster_num)    # a list of centroids' indexes
-    # # generate the centroid list
-    # centroid_list = list()
-    # for centroid_index in centroid_index_list:
-    #     centroid_list.append(vector_list[centroid_index])
-    # # ============================================ #
-
-
-    # ============================================ #
+    # METHOD#1: generate centroid indexes randomly
+    if seed_method == "-random":
+        print "RAMDOM!RAMDOM!RAMDOM!RAMDOM!RAMDOM!RAMDOM!RAMDOM!"
+        centroid_index_list = random.sample(list(range(0, len(vector_list)-1)), cluster_num)    # a list of centroids' indexes
+        # generate the centroid list
+        centroid_list = list()
+        for centroid_index in centroid_index_list:
+            centroid_list.append(vector_list[centroid_index])
     # METHOD#2: generate centroids indexes by kmeans++
-    centroid_list = kpp(vector_list, cluster_num)
-    # ============================================ #
+    elif seed_method == "-kpp":
+        print "KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!"
+        centroid_list = kpp(vector_list, cluster_num)
+    # Wrong method
+    else:
+        print "Wrong Seeding Method Input! Please input -random or -kpp"
 
     # print centroid_list
 
+    # GENERATE CLUSTERS
     clusters = dict()  # save {class1: vectorList1; class2: vectorList2; ...}
     stop = False
     # for iter_i in range(0, iter_time):  # [0, iter_time-1]
@@ -68,7 +81,7 @@ def main(argv):
                 clusters[classification_res].append(v_index)
         # print clusters
 
-        # recalculate the center for each cluster
+        # RECALCULATE CLUSTERS' CENTERS
         old_centroid_list = list(centroid_list)
         for key, cluster in clusters.iteritems():   # key is the cluster index, cluster is a list of vector_index
             # update the center for current cluster
@@ -109,16 +122,15 @@ def main(argv):
         if converge:
             stop = True
 
-
+    # OUTPUT RES
     print "TOTAL ITERATION TIME: " + str(itr)
-    # output the res
     for key, cluster in clusters.iteritems():   # key is the cluster index, cluster is a list of vector_index
         for index in cluster:
             print str(index) + " " + str(key)
 
 
-# the function to generate vector list from string
-def get_list(v_str):
+# the function to generate vector list from string - term frequency
+def get_list_tf(v_str):
     v_list = []
     v_arr = v_str.strip().split()
     for item in v_arr:
@@ -126,6 +138,10 @@ def get_list(v_str):
         v_list.append((int(item_arr[0]), int(item_arr[1])))
     v_list.sort(key=lambda tup: tup[0])     # sort by word index, increasing
     return v_list
+
+# the function to generate vector list from string - tfidf
+# def get_list_tfidf(v_str):
+#     TBD
 
 
 # the function to calculate the cosine distance between two vectors
