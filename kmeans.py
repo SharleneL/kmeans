@@ -20,12 +20,17 @@ def main(argv):
 
     # get total cluster number from input
     cluster_num = int(sys.argv[1])
-    # generate centroid indexes randomly
-    centroid_index_list = random.sample(list(range(0, len(vector_list)-1)), cluster_num)    # a list of centroids' indexes
-    # generate the centroid list
-    centroid_list = list()
-    for centroid_index in centroid_index_list:
-        centroid_list.append(vector_list[centroid_index])
+
+    # # METHOD#1: generate centroid indexes randomly
+    # centroid_index_list = random.sample(list(range(0, len(vector_list)-1)), cluster_num)    # a list of centroids' indexes
+    # # generate the centroid list
+    # centroid_list = list()
+    # for centroid_index in centroid_index_list:
+    #     centroid_list.append(vector_list[centroid_index])
+
+    # METHOD#2: generate centroids indexes by kmeans++
+    centroid_list = kpp(vector_list, cluster_num)
+    print centroid_list
 
     iter_time = 10
     clusters = dict()  # save {class1: vectorList1; class2: vectorList2; ...}
@@ -128,6 +133,39 @@ def normalize(v):
     len = float(math.sqrt(len))
     normalized_v = [(item[0], item[1]/len) for item in v]
     return normalized_v
+
+
+# the function to generate initial centroids by kmeans++
+def kpp(vector_list, cluster_num):
+    centroid_index_list = []
+    centroid_list = []
+
+    # 1. select the first centroid randomly
+    first_cindex = random.sample(list(range(0, len(vector_list)-1)), 1)[0]
+    centroid_index_list.append(first_cindex)
+    centroid_list.append(vector_list[first_cindex])
+
+    # get all cluster_num centroids
+    for i in range(1, cluster_num):
+        min_max_sim = sys.float_info.max
+        next_cindex = -1
+        # 2. for each vector in vector_list, calculate the dis with its nearest centroid (max similarity)
+        for v_index, vector in enumerate(vector_list):
+            if v_index in centroid_index_list:  # skip the already chosen centroids
+                continue
+            max_sim = sys.float_info.min
+
+            # find current vector's max-similarity, maintain the vector's index & max_similarity
+            for centroid in centroid_list:
+                cur_dis = get_dis(vector, centroid)
+                if cur_dis > max_sim:
+                    max_sim = cur_dis
+            # NOW: get the max_sim for current vector
+            if min_max_sim > max_sim:
+                next_cindex = v_index
+        centroid_index_list.append(next_cindex)
+        centroid_list.append(vector_list[next_cindex])
+    return centroid_list
 
 if __name__ == '__main__':
     main(sys.argv[1:])
