@@ -68,7 +68,8 @@ def main(argv):
             vector = vector_list[doc_index]
             for word_index in range(0, len(vector)):  # processing i-th word in vector
                 tf = float(vector[word_index][1]) / float(doc_word_count_list[doc_index])
-                idf = float(total_doc_len) / float(D[vector[word_index][0]])
+                # tf = float(vector[word_index][1])
+                idf = math.log(float(total_doc_len) / float(D[vector[word_index][0]]))
                 vector[word_index] = (vector[word_index][0], tf*idf)
 
         # print "==========/ TEST BEGIN /=========="
@@ -93,7 +94,7 @@ def main(argv):
 
     # METHOD#1: generate centroid indexes randomly
     if seed_method == "-random":
-        print "RAMDOM!RAMDOM!RAMDOM!RAMDOM!RAMDOM!RAMDOM!RAMDOM!"
+        print "RAMDOM!!!!"
         centroid_index_list = random.sample(list(range(0, len(vector_list)-1)), cluster_num)    # a list of centroids' indexes
         # generate the centroid list
         centroid_list = list()
@@ -101,12 +102,13 @@ def main(argv):
             centroid_list.append(vector_list[centroid_index])
     # METHOD#2: generate centroids indexes by kmeans++
     elif seed_method == "-kpp":
-        print "KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!"
+        print "KPP!!!!!"
         centroid_list = kpp(vector_list, cluster_num)
     # If Wrong Input
     else:
         print "Wrong Seeding Method Input! Please input -random or -kpp"
 
+    # print "Original centroid list:"
     # print centroid_list
 
     # GENERATE CLUSTERS
@@ -170,6 +172,8 @@ def main(argv):
                 index += 1
             v1 = [(item[0], float(item[1])/float((len(cluster)))) for item in v1]  # new centroid - use float
             centroid_list[key] = v1
+        # print "New centroid list:"
+        # print centroid_list
         # stop iteration judgement: compare old centroid list & current centroid list
         converge = True
         for cur, old in zip(centroid_list, old_centroid_list):
@@ -195,10 +199,6 @@ def get_list_tf(v_str):
         v_list.append((int(item_arr[0]), int(item_arr[1])))
     v_list.sort(key=lambda tup: tup[0])     # sort by word index, increasing
     return v_list
-
-# the function to generate vector list from string - tfidf
-# def get_list_tfidf(v_str):
-#     TBD
 
 
 # the function to calculate the cosine distance between two vectors
