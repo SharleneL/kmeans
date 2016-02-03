@@ -8,12 +8,16 @@ import numpy as np
 file_name = "../../HW2_data/HW2_dev.docVectors"
 # file_name = "../../HW2_data/fake.docVectors"
 
-
+# def main():
 def main(argv):
     # get terminal input
+
     cluster_num = int(sys.argv[1])
     get_list_method = sys.argv[2]
     seed_method = sys.argv[3]
+    # cluster_num = 3
+    # get_list_method = "-customize"
+    # seed_method = "-random"
 
     # save the file into a vector list
     vector_list = list()
@@ -29,7 +33,61 @@ def main(argv):
     # METHOD#1: get vector by tfidf
     elif get_list_method == "-customize":
         print "CUSTOMIZE!!!!!"
-    # Wrong Method
+
+        # precalculation
+        f = open(file_name)
+        f_line = f.readline()
+        D = dict()   # contains wordIndex:#docContainsWord
+        doc_word_count_list = list()  # save total word# in each doc
+        total_doc_len = 0
+        while '' != f_line:
+            total_doc_len += 1
+            v_arr = f_line.strip().split()
+            v_list = []  # vector list (wordIndex, occurenceTime in current doc)
+            word_count = 0
+            for item in v_arr:
+                item_arr = item.split(":")      # item_arr[0] is wordIndex, item_arr[1] is occurence time in current doc
+                # update dictionary
+                if not int(item_arr[0]) in D:
+                    D[int(item_arr[0])] = 1
+                else:
+                    D[int(item_arr[0])] += 1
+                # create vector list
+                v_list.append((int(item_arr[0]), int(item_arr[1])))
+                # update word count for current file
+                word_count += int(item_arr[1])
+            v_list.sort(key=lambda tup: tup[0])     # sort by word index, increasing
+            # NOW: get the tf vector list for one line
+            vector_list.append(v_list)              # append to the total vector list
+            doc_word_count_list.append(word_count)  # append the total word# in current file
+            f_line = f.readline()
+        f.close()
+
+        # calculate tfidf
+        for doc_index in range(0, len(vector_list)):  # vector = [(wordIndex1, occurenceTimeInCurrentDoc1), (2, 2), ...]
+            vector = vector_list[doc_index]
+            for word_index in range(0, len(vector)):  # processing i-th word in vector
+                tf = float(vector[word_index][1]) / float(doc_word_count_list[doc_index])
+                idf = float(total_doc_len) / float(D[vector[word_index][0]])
+                vector[word_index] = (vector[word_index][0], tf*idf)
+
+        # print "==========/ TEST BEGIN /=========="
+        # print total_doc_len  # right
+        # print D
+        # print doc_word_count_list
+        # print vector_list
+        # print "==========/ TEST   END /=========="
+
+
+
+
+
+
+
+
+
+
+    # If Wrong Input
     else:
         print "Wrong Running Method Input! Please input -general or -customize"
 
@@ -45,7 +103,7 @@ def main(argv):
     elif seed_method == "-kpp":
         print "KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!KPP!"
         centroid_list = kpp(vector_list, cluster_num)
-    # Wrong method
+    # If Wrong Input
     else:
         print "Wrong Seeding Method Input! Please input -random or -kpp"
 
@@ -109,7 +167,6 @@ def main(argv):
                         while i2 < len(v2):
                             v1.append((v2[i2][0], v2[i2][1]))
                             i2 += 1
-
                 index += 1
             v1 = [(item[0], float(item[1])/float((len(cluster)))) for item in v1]  # new centroid - use float
             centroid_list[key] = v1
@@ -206,3 +263,4 @@ def kpp(vector_list, cluster_num):
 
 if __name__ == '__main__':
     main(sys.argv[1:])
+    # main()
