@@ -3,47 +3,41 @@ import random
 import math
 import numpy as np
 
-# input format: python kmeans.py [cluster_num] [-general/-customize] [-random/-kpp]
+# COMMAND LINE INPUT FORMAT: python kmeans.py [cluster_num] [-general/-customize] [-random/-kpp]
 
-file_name = "../../HW2_data/HW2_dev.docVectors"
-# file_name = "../../HW2_data/fake.docVectors"
+# INPUT FILE PATH
+# file_name = "../../HW2_data/HW2_dev.docVectors"
+file_name = "../../HW2_data/HW2_test.docVectors"
 
-# def main():
+
 def main(argv):
     # get terminal input
-
     cluster_num = int(sys.argv[1])
     get_list_method = sys.argv[2]
     seed_method = sys.argv[3]
-    # cluster_num = 3
-    # get_list_method = "-customize"
-    # seed_method = "-random"
 
-    # save the file into a vector list
+    # save the input file into a vector list
     vector_list = list()
     # METHOD#1: get vector by tf
     if get_list_method == "-general":
-        print "GENERAL!!!!!"
         f = open(file_name)
         f_line = f.readline()
         while '' != f_line:
             vector_list.append(get_list_tf(f_line))
             f_line = f.readline()
         f.close()
-    # METHOD#1: get vector by tfidf
+    # METHOD#2: get vector by tfidf
     elif get_list_method == "-customize":
-        print "CUSTOMIZE!!!!!"
-
         # precalculation
         f = open(file_name)
         f_line = f.readline()
-        D = dict()   # contains wordIndex:#docContainsWord
-        doc_word_count_list = list()  # save total word# in each doc
+        D = dict()                      # contains wordIndex:#docContainsWord
+        doc_word_count_list = list()    # save total word# in each doc
         total_doc_len = 0
         while '' != f_line:
             total_doc_len += 1
             v_arr = f_line.strip().split()
-            v_list = []  # vector list (wordIndex, occurenceTime in current doc)
+            v_list = []                 # vector list (wordIndex, occurenceTime in current doc)
             word_count = 0
             for item in v_arr:
                 item_arr = item.split(":")      # item_arr[0] is wordIndex, item_arr[1] is occurence time in current doc
@@ -57,7 +51,7 @@ def main(argv):
                 # update word count for current file
                 word_count += int(item_arr[1])
             v_list.sort(key=lambda tup: tup[0])     # sort by word index, increasing
-            # NOW: get the tf vector list for one line
+            # ASSERT: get the tf vector list for one line
             vector_list.append(v_list)              # append to the total vector list
             doc_word_count_list.append(word_count)  # append the total word# in current file
             f_line = f.readline()
@@ -79,22 +73,13 @@ def main(argv):
         # print vector_list
         # print "==========/ TEST   END /=========="
 
-
-
-
-
-
-
-
-
-
     # If Wrong Input
     else:
         print "Wrong Running Method Input! Please input -general or -customize"
 
     # METHOD#1: generate centroid indexes randomly
     if seed_method == "-random":
-        print "RAMDOM!!!!"
+        # print "RAMDOM!!!!"
         centroid_index_list = random.sample(list(range(0, len(vector_list)-1)), cluster_num)    # a list of centroids' indexes
         # generate the centroid list
         centroid_list = list()
@@ -102,7 +87,7 @@ def main(argv):
             centroid_list.append(vector_list[centroid_index])
     # METHOD#2: generate centroids indexes by kmeans++
     elif seed_method == "-kpp":
-        print "KPP!!!!!"
+        # print "KPP!!!!!"
         centroid_list = kpp(vector_list, cluster_num)
     # If Wrong Input
     else:
@@ -184,7 +169,7 @@ def main(argv):
             stop = True
 
     # OUTPUT RES
-    print "TOTAL ITERATION TIME: " + str(itr)
+    # print "TOTAL ITERATION TIME: " + str(itr)
     for key, cluster in clusters.iteritems():   # key is the cluster index, cluster is a list of vector_index
         for index in cluster:
             print str(index) + " " + str(key)
