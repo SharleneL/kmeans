@@ -3,10 +3,10 @@ import random
 import math
 import numpy as np
 
-# COMMAND LINE INPUT FORMAT: python kmeans.py [cluster_num] [-general/-customize] [-random/-kpp]
+# COMMAND LINE INPUT FORMAT: python kmeans.py [cluster_num] [-general/-customize] [-random/-kpp] [file_path] > [output-file-path]
 
 # INPUT FILE PATH
-file_name = "../../HW2_data/HW2_dev.docVectors"
+# file_name = "../../HW2_data/HW2_dev.docVectors"
 # file_name = "../../HW2_data/HW2_test.docVectors"
 
 
@@ -15,6 +15,7 @@ def main(argv):
     cluster_num = int(sys.argv[1])
     get_list_method = sys.argv[2]
     seed_method = sys.argv[3]
+    file_name = sys.argv[4]
 
     # save the input file into a vector list
     vector_list = list()
