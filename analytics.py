@@ -28,7 +28,7 @@ def main():
     print word_count
     print "Total number of unique words:"
     print len(word_set)
-    print "Avg number of uniq words per doc:"
+    print "Avg number of unique words per doc:"
     print uniq_word_count / doc_count
 
     # CORPUS STAS FOR THE TEST SET
@@ -57,7 +57,7 @@ def main():
     print word_count
     print "Total number of unique words:"
     print len(word_set)
-    print "Avg number of uniq words per doc:"
+    print "Avg number of unique words per doc:"
     print uniq_word_count / doc_count
 
     # CORPUS STAS FOR THE FIRST DOC IN DEV SET
